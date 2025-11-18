@@ -1,133 +1,58 @@
 // src/tabs/MapTab.js
-import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
+import React from "react";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 
-// Fix icon issue with Leaflet in React
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon-2x.png",
-  iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
-});
+export default function MapTab({ posts }) {
+  // Pick a default center (e.g., NYC)
+  const center = [40.7128, -74.006];
 
-// Auto-center map on user geolocation
-function AutoCenter() {
-  const map = useMap();
-
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        map.setView([pos.coords.latitude, pos.coords.longitude], 13);
-      },
-      () => {
-        // fallback center if permission denied
-        map.setView([40.7357, -74.1724], 12); // Newark
-      }
-    );
-  }, [map]);
-
-  return null;
-}
-
-export default function MapTab({ posts, setModalPost }) {
   return (
     <div style={styles.page}>
-      <h2 style={styles.title}>Live Map</h2>
+      <h2 style={styles.title}>Map</h2>
 
-      <MapContainer
-        center={[40.7357, -74.1724]}
-        zoom={12}
-        style={styles.map}
-        scrollWheelZoom
-      >
-        <AutoCenter />
+      <div style={styles.mapWrap}>
+        <MapContainer
+          center={center}
+          zoom={11}
+          style={{ height: "100%", width: "100%" }}
+        >
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution="&copy; OpenStreetMap"
+          />
 
-        {/* DARK MATTER TILES */}
-        <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"
-          attribution='&copy; <a href=\"https://carto.com/attributions\">CARTO</a>'
-        />
-
-        {posts
-          .filter((p) => p.lat && p.lng)
-          .map((p) => (
-            <Marker key={p.id} position={[p.lat, p.lng]}>
-              <Popup>
-                <div style={{ width: 180 }}>
-                  {!p.ad && (
-                    <>
-                      <img
-                        src={p.img}
-                        alt="thumb"
-                        style={{
-                          width: "100%",
-                          height: 90,
-                          objectFit: "cover",
-                          borderRadius: 8,
-                          marginBottom: 6,
-                        }}
-                      />
-                      <div style={{ fontWeight: 700 }}>{p.user}</div>
-                      <div style={{ fontSize: 13, margin: "4px 0" }}>
-                        {p.text}
-                      </div>
-                      <div style={{ fontSize: 12, color: "#9ca3af" }}>
-                        {Math.floor(
-                          (Date.now() - p.createdAt) / (1000 * 60)
-                        )}{" "}
-                        min ago
-                      </div>
-
-                      <button
-                        style={styles.btn}
-                        onClick={() => setModalPost(p)}
-                      >
-                        View Post
-                      </button>
-                    </>
-                  )}
-
-                  {p.ad && (
-                    <div>
-                      <strong>Ad:</strong> {p.text}
-                    </div>
-                  )}
-                </div>
-              </Popup>
-            </Marker>
-          ))}
-      </MapContainer>
+          {posts
+            .filter((p) => p.lat && p.lng)
+            .map((p) => (
+              <Marker key={p.id} position={[p.lat, p.lng]}>
+                <Popup>
+                  <strong>{p.user}</strong>
+                  <br />
+                  {p.text}
+                </Popup>
+              </Marker>
+            ))}
+        </MapContainer>
+      </div>
     </div>
   );
 }
 
 const styles = {
-  page: { paddingBottom: 40 },
+  page: {
+    padding: 10,
+    paddingBottom: 80,
+  },
   title: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 900,
-    marginBottom: 10,
+    marginBottom: 12,
   },
-  map: {
+  mapWrap: {
     width: "100%",
-    height: "70vh",
-    borderRadius: 14,
+    height: "75vh",
+    borderRadius: 16,
     overflow: "hidden",
-    boxShadow: "0 6px 20px rgba(0,0,0,0.35)",
-  },
-  btn: {
-    marginTop: 6,
-    width: "100%",
-    padding: "6px 0",
-    borderRadius: 8,
-    border: "none",
-    background: "linear-gradient(135deg,#3b82f6,#ec4899)",
-    color: "white",
-    fontWeight: 700,
-    cursor: "pointer",
-    fontSize: 13,
+    boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
   },
 };
