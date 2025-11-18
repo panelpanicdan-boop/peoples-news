@@ -33,7 +33,7 @@ export default function SettingsTab({
         </select>
       </div>
 
-      {/* VERIFY ACCOUNT */}
+      {/* IDENTITY VERIFICATION */}
       <div style={styles.card}>
         <div style={styles.label}>Identity Verification</div>
         {user.verified ? (
@@ -112,4 +112,9 @@ const styles = {
   title: { fontSize: 22, fontWeight: 900, marginBottom: 16 },
   card: {
     background: "white",
-    p
+    padding: 16,
+    borderRadius: 16,
+    boxShadow: "0 6px 20px rgba(0,0,0,0.1)",
+    marginBottom: 20,
+  },
+  label: { fontSi
