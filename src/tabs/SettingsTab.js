@@ -16,51 +16,100 @@ export default function SettingsTab({
   tickerText,
   setTickerText,
 }) {
-  function verifyUser() {
-    alert("ID verification (mock) — user verified.");
-    setUser({ ...user, verified: true });
-  }
-
   return (
     <div style={styles.page}>
       <h2 style={styles.title}>Settings</h2>
 
-      {/* APPEARANCE */}
+      {/* DARK MODE */}
       <div style={styles.card}>
-        <h3 style={styles.section}>Appearance</h3>
-        <label style={styles.row}>
-          <span>Dark Mode</span>
-          <input
-            type="checkbox"
-            checked={darkMode}
-            onChange={() => setDarkMode(!darkMode)}
-          />
-        </label>
+        <div style={styles.label}>Dark Mode</div>
+        <select
+          style={styles.select}
+          value={darkMode ? "on" : "off"}
+          onChange={(e) => setDarkMode(e.target.value === "on")}
+        >
+          <option value="off">Off</option>
+          <option value="on">On</option>
+        </select>
       </div>
 
-      {/* MONETIZATION + ID VERIFICATION */}
+      {/* VERIFY ACCOUNT */}
       <div style={styles.card}>
-        <h3 style={styles.section}>Monetization & Identity</h3>
-
-        <div style={styles.row}>
-          <span>Verified User</span>
-          <span style={user.verified ? styles.verified : styles.unverified}>
-            {user.verified ? "VERIFIED ✓" : "NOT VERIFIED"}
-          </span>
-        </div>
-
-        {!user.verified && (
-          <button style={styles.btn} onClick={verifyUser}>
-            Verify My ID
+        <div style={styles.label}>Identity Verification</div>
+        {user.verified ? (
+          <div style={styles.verified}>✔ Verified</div>
+        ) : (
+          <button
+            style={styles.verifyBtn}
+            onClick={() => setUser({ ...user, verified: true })}
+          >
+            Verify Identity (Mock)
           </button>
         )}
+      </div>
 
-        <div style={styles.row}>
-          <span>Lifetime Earnings</span>
-          <strong>$0.00</strong>
-        </div>
+      {/* LIVE STATUS */}
+      <div style={styles.card}>
+        <div style={styles.label}>Live Status</div>
 
-        <div style={styles.row}>
-          <span>Total Views</span>
-          <strong>0</strong>
-        </di
+        {!isLive ? (
+          <button style={styles.liveBtn} onClick={handleGoLive}>
+            Go Live
+          </button>
+        ) : (
+          <button style={styles.stopLiveBtn} onClick={stopLive}>
+            Stop Live
+          </button>
+        )}
+      </div>
+
+      {/* TICKER SETTINGS */}
+      <div style={styles.card}>
+        <div style={styles.label}>Ticker Display</div>
+
+        <select
+          style={styles.select}
+          value={showTicker ? "on" : "off"}
+          onChange={(e) => setShowTicker(e.target.value === "on")}
+        >
+          <option value="on">Show</option>
+          <option value="off">Hide</option>
+        </select>
+
+        <div style={{ height: 10 }} />
+
+        <div style={styles.label}>Ticker Mode</div>
+
+        <select
+          style={styles.select}
+          value={tickerMode}
+          onChange={(e) => setTickerMode(e.target.value)}
+        >
+          <option value="all">All Updates</option>
+          <option value="stocks">Stocks</option>
+          <option value="breaking">Breaking News</option>
+          <option value="weather">Weather Alerts</option>
+          <option value="traffic">Traffic Updates</option>
+          <option value="local">Local</option>
+          <option value="custom">Custom Text</option>
+        </select>
+
+        {tickerMode === "custom" && (
+          <textarea
+            style={styles.textarea}
+            value={tickerText}
+            onChange={(e) => setTickerText(e.target.value)}
+            placeholder="Enter your own ticker text…"
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+const styles = {
+  page: { paddingBottom: 80 },
+  title: { fontSize: 22, fontWeight: 900, marginBottom: 16 },
+  card: {
+    background: "white",
+    p
